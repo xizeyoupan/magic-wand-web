@@ -68,7 +68,12 @@
                       return
                     }
                     toast(t('connect_wifi_modal.loading'), 'info')
-                    wsmgr.connect_wifi()
+
+                    wsmgr.sendRequest('connect_wifi',
+                                      {
+                                        ssid: info_store.wifi_info.input_ssid,
+                                        password: info_store.wifi_info.input_password
+                                      })
                   }"
                 >
                   {{ $t('connect_wifi_modal.connect') }}

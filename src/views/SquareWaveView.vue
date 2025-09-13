@@ -220,15 +220,13 @@ const channel = reactive({
 
 const update_duty_resolution = async () => {
     if (channel.index >= 0 && channel.timer_sel >= 0) {
-        const result = await wsmgr.get_ledc_timer_config({ index: channel.timer_sel })
+        const result = await wsmgr.sendRequest('get_ledc_timer_config', { index: channel.timer_sel })
         channel.duty_resolution = result.data.duty_resolution
-        console.log('更新通道占空比分辨率:', channel.duty_resolution)
     }
 }
 
 const get_timer_config = async () => {
-    const result = await wsmgr.get_ledc_timer_config({ index: ledc_timer.index })
-    console.log('LED控制器时钟配置结果:', result)
+    const result = await wsmgr.sendRequest('get_ledc_timer_config', { index: ledc_timer.index })
     Object.assign(ledc_timer, result.data)
 }
 
@@ -243,38 +241,35 @@ const set_timer_config = async () => {
         return
     }
 
-    const result = await wsmgr.set_ledc_timer_config(
-        {
-            index: ledc_timer.index,
-            speed_mode: ledc_timer.speed_mode,
-            freq_hz: ledc_timer.freq_hz,
-        })
+    const result = await wsmgr.sendRequest('set_ledc_timer_config', {
+        index: ledc_timer.index,
+        speed_mode: ledc_timer.speed_mode,
+        freq_hz: ledc_timer.freq_hz,
+    })
 
-    console.log('LED控制器时钟配置设置结果:', result)
-    if (result.error) {
-        toast(t('toast.error'), 'error')
+    if (result.err_code) {
+        const err_info = `err code: ${result.err_code}, err msg: ${result.err_msg}`
+        toast(err_info, 'error')
+        console.error(err_info)
     } else {
         Object.assign(ledc_timer, result.data)
         await update_duty_resolution()
         toast(t('toast.success'), 'success')
     }
-
 }
 
 const get_channel_config = async () => {
-    const result = await wsmgr.get_ledc_channel_config({ index: channel.index })
-    console.log('LED控制器通道配置结果:', result)
+    const result = await wsmgr.sendRequest('get_ledc_channel_config', { index: channel.index })
     Object.assign(channel, result.data)
 }
 
 const clear_channel_config = async () => {
-    const result = await wsmgr.clear_ledc_channel_config({ index: channel.index })
-    console.log('LED控制器通道配置结果:', result)
+    const result = await wsmgr.sendRequest('clear_ledc_channel_config', { index: channel.index } )
     Object.assign(channel, result.data)
 }
 
 const set_channel_config = async () => {
-    const result = await wsmgr.set_ledc_channel_config(
+    const result = await wsmgr.sendRequest('set_ledc_channel_config',
         {
             index: channel.index,
             gpio_num: channel.gpio_num,
@@ -284,10 +279,10 @@ const set_channel_config = async () => {
             hpoint: channel.hpoint,
         })
 
-    console.log('LED控制器通道配置设置结果:', result)
-
-    if (result.error) {
-        toast(t('toast.error'), 'error')
+    if (result.err_code) {
+        const err_info = `err code: ${result.err_code}, err msg: ${result.err_msg}`
+        toast(err_info, 'error')
+        console.error(err_info)
     } else {
         Object.assign(channel, result.data)
         toast(t('toast.success'), 'success')

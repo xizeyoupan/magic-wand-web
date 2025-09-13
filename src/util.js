@@ -119,3 +119,13 @@ export const calColor = (name) => {
     }
     return '#cccccc'
 }
+
+export const toast_on_result = (result)=>{
+    if (result.err_code) {
+        const err_info = `err code: ${result.err_code}, err msg: ${result.err_msg}`
+        toast(err_info, 'error')
+        console.error(err_info)
+    } else {
+        toast(t('toast.load_success'), 'success')
+    }
+}

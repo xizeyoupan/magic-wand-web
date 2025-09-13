@@ -4,6 +4,7 @@ import { useCNNStore } from '../store/CNNStore.js'
 import { i18n } from '../i18n.js'
 import pinia from '../store/index.js'
 import { get_ws_username, get_ws_password, set_ws_username, set_ws_password, set_mdns_host_name } from '../util.js'
+import { DEFAULT_TIMEOUT_MS } from '../config.js'
 
 const info_store = useInfoStore(pinia)
 const CNN_store = useCNNStore(pinia)
@@ -107,6 +108,8 @@ class WebSocketManager {
                         const { resolve, reject, timeout } = this.pendingRequests.get(requestId)
                         clearTimeout(timeout)
                         this.pendingRequests.delete(requestId)
+                        console.log("ws receive data:")
+                        console.log(payload)
                         error ? reject(error) : resolve(payload)
                     } else if (type && this.messageHandlers.has(type)) {
                         this.messageHandlers.get(type)(payload)
@@ -178,86 +181,27 @@ class WebSocketManager {
         console.log("WebSocketManager 资源清理完毕")
     }
 
-    async quest_reboot() {
-        this.sendRequest("reboot")
-    }
-
-    async update_user_config() {
-        let payload = await this.sendRequest("update_user_config", { data: info_store.user_config })
-        console.log("更新用户配置成功", payload)
-        Object.assign(info_store.user_config, payload.data)
-        set_ws_username(info_store.user_config.username)
-        set_ws_password(info_store.user_config.password)
-        set_mdns_host_name(info_store.user_config.mdns_host_name)
-    }
-
-    async reset_user_config() {
-        let payload = await this.sendRequest("reset_user_config")
-        console.log("重置用户配置成功", payload)
-        Object.assign(info_store.user_config, payload.data)
-        set_ws_username(info_store.user_config.username)
-        set_ws_password(info_store.user_config.password)
-        set_mdns_host_name(info_store.user_config.mdns_host_name)
-    }
-
-    async connect_wifi() {
-        this.sendRequest('connect_wifi',
-            {
-                data:
-                {
-                    ssid: info_store.wifi_info.input_ssid,
-                    password: info_store.wifi_info.input_password
-                }
-            })
-    }
-
     async get_device_info() {
         let payload = await this.sendRequest('get_device_info')
-        console.log("获取设备信息成功", payload)
         Object.assign(info_store.device_info, payload.data)
     }
 
     async get_user_config() {
         let payload = await this.sendRequest('get_user_config')
-        console.log("获取用户配置成功", payload)
         Object.assign(info_store.user_config, payload.data)
         set_ws_username(info_store.user_config.username)
         set_ws_password(info_store.user_config.password)
         set_mdns_host_name(info_store.user_config.mdns_host_name)
     }
 
-    async get_wifi_info() {
-        let payload = await this.sendRequest('get_wifi_info')
-        console.log("获取WiFi信息成功", payload)
-        Object.assign(info_store.wifi_info, payload.data)
-    }
-
-    async get_wifi_list() {
-        let payload = await this.sendRequest('get_wifi_list', {}, 10000)
-        console.log("获取WiFi列表成功", payload)
-        info_store.wifi_list = payload.data
-    }
-
     async get_state_info() {
         let payload = await this.sendRequest('get_state_info')
-        console.log("获取状态信息成功", payload)
         info_store.stat_data.task_list = payload.data.task_list.sort((a, b) => a.xTaskNumber - b.xTaskNumber)
         Object.assign(info_store.stat_data, payload.data)
     }
 
-    async get_imu_data() {
-        let payload = await this.sendRequest('get_imu_data')
-        console.log("获取IMU数据成功", payload)
-        Object.assign(info_store.imu_data, payload.data)
-    }
-
-    async reset_imu() {
-        let payload = await this.sendRequest('reset_imu')
-        console.log("重置IMU成功", payload)
-    }
-
     async get_mpu_data_row(data) {
-        let payload = await this.sendRequest('get_mpu_data_row', { data })
+        let payload = await this.sendRequest('get_mpu_data_row', data)
         console.log("请求MPU采集成功", payload)
     }
 
@@ -272,77 +216,30 @@ class WebSocketManager {
         return payload
     }
 
-    async get_ledc_timer_config(data) {
-        let payload = await this.sendRequest('get_ledc_timer_config', { data })
-        console.log("获得LED定时器配置成功", payload)
-        return payload
-    }
-
-    async set_ledc_timer_config(data) {
-        let payload = await this.sendRequest('set_ledc_timer_config', { data })
-        console.log("设置LED定时器配置成功", payload)
-        return payload
-    }
-
-    async get_ledc_channel_config(data) {
-        let payload = await this.sendRequest('get_ledc_channel_config', { data })
-        console.log("获得LED通道配置成功", payload)
-        return payload
-    }
-
-    async clear_ledc_channel_config(data) {
-        let payload = await this.sendRequest('clear_ledc_channel_config', { data })
-        console.log("释放LED通道配置成功", payload)
-        return payload
-    }
-
-    async set_ledc_channel_config(data) {
-        let payload = await this.sendRequest('set_ledc_channel_config', { data })
-        console.log("设置LED通道配置成功", payload)
-        return payload
-    }
-
     async start_predict(data) {
-        let payload = await this.sendRequest('start_predict', { data })
+        let payload = await this.sendRequest('start_predict', data)
         console.log("start_predict成功", payload)
     }
 
     async stop_predict(data) {
-        let payload = await this.sendRequest('stop_predict', { data })
+        let payload = await this.sendRequest('stop_predict', data)
         console.log("stop_predict成功", payload)
     }
 
     async modify_model(data) {
-        let payload = await this.sendRequest('modify_model', { data })
+        let payload = await this.sendRequest('modify_model', data)
         console.log("modify_model成功", payload)
-    }
-
-    async get_dac_cosine_config(data) {
-        let payload = await this.sendRequest('get_dac_cosine_config', { data })
-        console.log("获取正弦通道配置成功", payload)
-        return payload
-    }
-
-    async clear_dac_cosine_channel(data) {
-        let payload = await this.sendRequest('clear_dac_cosine_channel', { data })
-        console.log("清除正弦通道配置成功", payload)
-        return payload
-    }
-
-    async set_dac_cosine_channel(data) {
-        let payload = await this.sendRequest('set_dac_cosine_channel', { data })
-        console.log("设置正弦通道配置成功", payload)
-        return payload
     }
 
     _generateRequestId() {
         return `req_${Date.now()}_${this.requestCounter++}`
     }
 
-    sendRequest(type, payload = {}, timeoutMs = 2000) {
+    sendRequest(type, payload = {}, timeoutMs = DEFAULT_TIMEOUT_MS) {
         if (!info_store.wifi_info.isOnline) {
             return Promise.reject("设备离线")
         } else if (this.ws.readyState !== WebSocket.OPEN) {
+            info_store.wifi_info.isOnline = false
             return Promise.reject("WebSocket未连接")
         }
 
@@ -358,6 +255,8 @@ class WebSocketManager {
             this.pendingRequests.set(requestId, { resolve, reject, timeout })
 
             try {
+                console.log("ws send data:")
+                console.log(msg)
                 this.ws.send(JSON.stringify(msg))
             } catch (e) {
                 clearTimeout(timeout)

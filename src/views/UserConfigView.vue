@@ -12,7 +12,14 @@
           const ok = await confirmRef.show(t('confirm_dialog.save_confirm'))
           if (ok) {
             toast(t('toast.loading'), 'info')
-            await wsmgr.update_user_config()
+
+            let payload = await wsmgr.sendRequest('update_user_config', info_store.user_config)
+            console.log(`更新用户配置成功`, payload)
+            Object.assign(info_store.user_config, payload.data)
+            set_ws_username(info_store.user_config.username)
+            set_ws_password(info_store.user_config.password)
+            set_mdns_host_name(info_store.user_config.mdns_host_name)
+
             toast(t('toast.load_success'), 'success')
           }
         }"
@@ -37,7 +44,14 @@
           const ok = await confirmRef.show(t('confirm_dialog.reset_confirm'))
           if (ok) {
             toast(t('toast.loading'), 'info')
-            await wsmgr.reset_user_config()
+
+            let payload = await wsmgr.sendRequest(`reset_user_config`)
+            console.log(`重置用户配置成功`, payload)
+            Object.assign(info_store.user_config, payload.data)
+            set_ws_username(info_store.user_config.username)
+            set_ws_password(info_store.user_config.password)
+            set_mdns_host_name(info_store.user_config.mdns_host_name)
+
             toast(t('toast.load_success'), 'success')
           }
         }"
@@ -50,7 +64,7 @@
           const ok = await confirmRef.show(t('confirm_dialog.reboot_confirm'))
           if (ok) {
             toast(t('toast.loading'), 'info')
-            wsmgr.quest_reboot()
+            wsmgr.sendRequest(`reboot`)
           }
         }"
       >
@@ -408,6 +422,8 @@ import ConfirmDialog from '../components/ConfirmDialog.vue'
 import ProgressDialog from '../components/ProgressDialog.vue'
 import { check_not_online } from '../util.js'
 import { toast } from '../plugins/toast.js'
+import { get_ws_username, get_ws_password, set_ws_username, set_ws_password, set_mdns_host_name } from '../util.js'
+
 const t = i18n.global.t
 
 const info_store = useInfoStore()

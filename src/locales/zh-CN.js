@@ -23,6 +23,7 @@ export default {
         sin_wave: '正弦波',
         any_wave: '任意波形',
         logic_analyzer: '逻辑分析仪',
+        func_plot: "函数发生器",
     },
     language: "设置语言",
     device: {
@@ -98,7 +99,7 @@ export default {
         SSID: "SSID",
         RSSI: "信号强度",
         channel: "信道",
-        ip: "本机IP地址",
+        ip: "ESPace IP 地址",
         gw: "网关",
         netmask: "子网掩码",
         count: "数量",

@@ -128,29 +128,30 @@ const sine_config = reactive({
 })
 
 const get_channel_config = async () => {
-    const result = await wsmgr.get_dac_cosine_config({ index: sine_config.index })
+    const result = await wsmgr.sendRequest('get_dac_cosine_config', { index: sine_config.index })
     Object.assign(sine_config, result.data)
 }
 
 const clear_channel_config = async () => {
-    const result = await wsmgr.clear_dac_cosine_channel({ index: sine_config.index })
-    console.log('正弦波控制器通道配置结果:', result)
+    const result = await wsmgr.sendRequest('clear_dac_cosine_channel', { index: sine_config.index })
     Object.assign(sine_config, result.data)
 }
 
 const set_channel_config = async () => {
-    const result = await wsmgr.set_dac_cosine_channel({
-        index: sine_config.index,
-        phase: sine_config.phase,
-        atten: sine_config.atten,
-        freq_hz: sine_config.freq_hz,
-        offset: sine_config.offset,
-    })
+    const result = await wsmgr.sendRequest('set_dac_cosine_channel',
+        {
+            index: sine_config.index,
+            phase: sine_config.phase,
+            atten: sine_config.atten,
+            freq_hz: sine_config.freq_hz,
+            offset: sine_config.offset,
+        }
+    )
 
-    console.log('正弦波控制器通道配置设置结果:', result)
-
-    if (result.error) {
-        toast(t('toast.error'), 'error')
+    if (result.err_code) {
+        const err_info = `err code: ${result.err_code}, err msg: ${result.err_msg}`
+        toast(err_info, 'error')
+        console.error(err_info)
     } else {
         Object.assign(sine_config, result.data)
         toast(t('toast.success'), 'success')

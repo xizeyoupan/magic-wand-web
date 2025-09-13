@@ -43,7 +43,8 @@ const showModal = ref(false)
 const get_wifi_list = async () => {
     if (check_not_online()) return
     toast(t('toast.loading'), 'info')
-    await wsmgr.get_wifi_list()
+    let payload = await wsmgr.sendRequest('get_wifi_list', {}, 10000)
+    info_store.wifi_list = payload.data
     toast(t('toast.load_success'), 'success')
 }
 
@@ -55,7 +56,10 @@ const bssid2manf = (bssid, data) => {
 const get_wifi_info = async () => {
     if (check_not_online()) return
     toast(t('toast.loading'), 'info')
-    await wsmgr.get_wifi_info()
+
+    let payload = await wsmgr.sendRequest('get_wifi_info')
+    Object.assign(info_store.wifi_info, payload.data)
+
     toast(t('toast.load_success'), 'success')
 }
 

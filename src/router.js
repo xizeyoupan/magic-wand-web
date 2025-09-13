@@ -16,6 +16,8 @@ import StateView from './views/StateView.vue'
 import EsptoolView from './views/EsptoolView.vue'
 import SquareWaveView from './views/SquareWaveView.vue'
 import CosineWaveView from './views/CosineWaveView.vue'
+import FunctionPlotView from './views/FunctionPlotView.vue'
+
 
 const routes = [
     { path: '/', redirect: '/about' },
@@ -35,6 +37,7 @@ const routes = [
     { path: '/esptool', component: EsptoolView },
     { path: '/square-wave', component: SquareWaveView },
     { path: '/cosine-wave', component: CosineWaveView },
+    { path: '/func-plot', component: FunctionPlotView },
 ]
 
 const router = createRouter({
