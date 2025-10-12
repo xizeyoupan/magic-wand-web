@@ -49,5 +49,14 @@ const route = useRoute()
         {{ $t('nav.any_wave') }}
       </button>
     </MenuItem>
+
+    <MenuItem v-slot="{ active }">
+      <button
+        :class="[active ? 'bg-black/15' : '', 'flex w-full items-center rounded-md px-2 py-2 text-sm']"
+        @click="router.push('/video2wav')"
+      >
+        {{ $t('nav.video_to_wav') }}
+      </button>
+    </MenuItem>
   </DropdownMenu>
 </template>

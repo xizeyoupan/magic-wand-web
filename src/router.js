@@ -17,6 +17,7 @@ import EsptoolView from './views/EsptoolView.vue'
 import SquareWaveView from './views/SquareWaveView.vue'
 import CosineWaveView from './views/CosineWaveView.vue'
 import FunctionPlotView from './views/FunctionPlotView.vue'
+import Video2WaveView from './views/Video2WaveView.vue'
 
 
 const routes = [
@@ -38,6 +39,7 @@ const routes = [
     { path: '/square-wave', component: SquareWaveView },
     { path: '/cosine-wave', component: CosineWaveView },
     { path: '/func-plot', component: FunctionPlotView },
+    { path: '/video2wav', component: Video2WaveView },
 ]
 
 const router = createRouter({

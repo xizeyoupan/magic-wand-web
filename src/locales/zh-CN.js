@@ -24,6 +24,7 @@ export default {
         any_wave: '任意波形',
         logic_analyzer: '逻辑分析仪',
         func_plot: "函数发生器",
+        video_to_wav: "视频生成",
     },
     language: "设置语言",
     device: {
